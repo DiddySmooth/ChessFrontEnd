@@ -1,5 +1,6 @@
 import React from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
+import {Route, Redirect} from 'react-router-dom'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -221,6 +222,13 @@ export default function PrimarySearchAppBar() {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      {redirectLogin ?
+        <Redirect to="/login" />
+      :
+        <Redirect to="/home" />
+
+      }
     </div>
+    
   );
 }
