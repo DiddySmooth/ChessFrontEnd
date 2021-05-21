@@ -19,6 +19,7 @@ function App() {
         }
       })
 
+      
       if (res.data.user) {
         setUser(res.data.user)
         console.log(res.data.user)
