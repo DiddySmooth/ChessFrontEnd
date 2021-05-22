@@ -83,8 +83,11 @@ export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [redirectLogin, setRedirectLogin] = React.useState(false)
+  const [redirectRegister, setRedirectRegister] = React.useState(false)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -105,10 +108,13 @@ export default function PrimarySearchAppBar() {
 
   const handleLoginClick = () => {
     setRedirectLogin(true)
+    setRedirectRegister(false)
     console.log("Login")
+    
   }
   const handleSignUpClick = () => {
-    setRedirectLogin(true)
+    setRedirectRegister(true)
+    setRedirectLogin(false)
     console.log("Register")
   }
   const menuId = 'primary-search-account-menu';
@@ -224,6 +230,12 @@ export default function PrimarySearchAppBar() {
       {renderMenu}
       {redirectLogin ?
         <Redirect to="/login" />
+      :
+        <Redirect to="/home" />
+
+      }
+      {redirectRegister ?
+        <Redirect to="/register" />
       :
         <Redirect to="/home" />
 
