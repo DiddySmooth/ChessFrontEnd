@@ -1,3 +1,4 @@
+
 class ChessPiece {
     constructor(name, isAttacked, color, id) {
         this.name = name // string
