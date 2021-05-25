@@ -6,15 +6,29 @@ import WithMoveValidation from "./ChessIntergration";
 const ENDPOINT = "http://127.0.0.1:3001";
 
 const Demo = () => {
-
+    const [players, setPlayers] = useState([1,2,3,4])
     const [response, setResponse] = useState("");
+    
+    const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
 
     const socketConnect = () => {
-      const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
-      socket.on("FromAPI", data => {
-        setResponse(data);
-      });
+        socket.on("connection", data => {
+            setResponse(data);
+        });
+
+        let player1 = "DiddySmooth"
+        let roomId = 10
+        socket.emit("joined", player1, roomId, ack => {socket.send(player1)})
+
+        socket.on('full', function (msg) {
+            if(roomId == msg)
+            window.location.assign(window.location.href+ 'full.html');
+        });
+      
     }
+
+
+
     return (
       <div>
         <div style={boardsContainer}>
