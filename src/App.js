@@ -5,7 +5,11 @@ import axios from 'axios'
 import {UserContext} from './Context/UserContext'
 import PrimarySearchAppBar from './Components/NavBar';
 import SignInSide from './Pages/LoginPage'
-import SignUp from './Pages/SignupPage'
+
+import SignUp from './Pages/SignupPage';
+import ChessPage from './Pages/ChessPage';
+
+
 function App() {
   const {userState} = useContext(UserContext)
   const [user, setUser] = userState
@@ -32,7 +36,7 @@ function App() {
   return (
     <div className="App">
       <PrimarySearchAppBar />
-
+      <ChessPage />
       <Route exact path="/login">
         {user ? 
           <Redirect to="/home" />
@@ -45,8 +49,14 @@ function App() {
           <Redirect to="/home" />
         :
           <SignUp />
+
+          
         }
       </Route>
+      <Route exact path="/game">
+        <ChessPage />
+      </Route>
+
     </div>
   );
 }
