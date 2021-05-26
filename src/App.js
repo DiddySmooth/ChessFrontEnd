@@ -3,11 +3,13 @@ import {Route, Redirect} from 'react-router-dom'
 import {useEffect, useContext} from 'react'
 import axios from 'axios'
 import {UserContext} from './Context/UserContext'
-import PrimarySearchAppBar from './Components/NavBar';
 import SignInSide from './Pages/LoginPage'
 
 import SignUp from './Pages/SignupPage';
 import ChessPage from './Pages/ChessPage';
+import HomePage from './Pages/HomePage'
+import PrimarySearchAppBar from './Components/NavBar';
+import ProfilePage from './Pages/ProfilePage';
 
 
 function App() {
@@ -33,9 +35,14 @@ function App() {
   }
 
   useEffect(() => { getUserInfo() }, [])
+
+
   return (
     <div className="App">
       <PrimarySearchAppBar />
+      <Route exact path="/home">
+        <HomePage />
+      </Route>
       <Route exact path="/login">
         {user ? 
           <Redirect to="/home" />
@@ -49,6 +56,14 @@ function App() {
         :
           <SignUp />
 
+          
+        }
+      </Route>
+      <Route exact path="/profile">
+        {user ? 
+            <ProfilePage />
+        :
+            <Redirect to="/home" /> 
           
         }
       </Route>

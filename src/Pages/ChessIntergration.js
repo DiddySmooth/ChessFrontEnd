@@ -4,7 +4,11 @@ import Chess from "chess.js"; // import Chess from  "chess.js"(default) if recie
 
 import Chessboard from "chessboardjsx";
 
-class HumanVsHuman extends Component {
+class HumanVsHuman extends React.Component {
+    constructor(props){
+        super(props)
+        this.props = props
+    }
   static propTypes = { children: PropTypes.func };
 
   state = {
@@ -23,8 +27,20 @@ class HumanVsHuman extends Component {
 
   componentDidMount() {
     this.game = new Chess();
+    console.log(this.props.updateBoard)
+    
   }
-
+  componentDidUpdate(prevProps){
+ 
+    if(this.state.fen !== this.props.updateBoard && this.props.updateBoard !== null){
+        console.log(this.props.updateBoard)
+        this.setState({fen: this.props.updateBoard})
+    }
+  }
+  isGameOver() {
+      if(this.game.game_over() === true)
+      console.log("Game Over")
+  }
   // keep clicked square style and remove hint squares
   removeHighlightSquare = () => {
     this.setState(({ pieceSquare, history }) => ({
@@ -74,8 +90,14 @@ class HumanVsHuman extends Component {
       history: this.game.history({ verbose: true }),
       squareStyles: squareStyling({ pieceSquare, history })
     }));
+    this.isGameOver()
+    let fenMsg = this.game.fen()
+    console.log(move)
+    this.props.setFen(fenMsg)
+    
   };
 
+ 
   onMouseOverSquare = square => {
     // get list of possible moves for this square
     let moves = this.game.moves({
@@ -145,15 +167,16 @@ class HumanVsHuman extends Component {
       dropSquareStyle,
       onDragOverSquare: this.onDragOverSquare,
       onSquareClick: this.onSquareClick,
-      onSquareRightClick: this.onSquareRightClick
+      onSquareRightClick: this.onSquareRightClick,
+      isGameOver: this.isGameOver
     });
   }
 }
 
-export default function WithMoveValidation() {
+export default function WithMoveValidation(props) {
   return (
     <div>
-      <HumanVsHuman>
+      <HumanVsHuman test={props.test} setFen={props.setFen} updateBoard={props.updateBoard}>
         {({
           position,
           onDrop,
@@ -163,7 +186,8 @@ export default function WithMoveValidation() {
           dropSquareStyle,
           onDragOverSquare,
           onSquareClick,
-          onSquareRightClick
+          onSquareRightClick,
+          isGameOver
         }) => (
           <Chessboard
             id="humanVsHuman"
@@ -181,6 +205,7 @@ export default function WithMoveValidation() {
             onDragOverSquare={onDragOverSquare}
             onSquareClick={onSquareClick}
             onSquareRightClick={onSquareRightClick}
+            isGameOver={isGameOver}
           />
         )}
       </HumanVsHuman>

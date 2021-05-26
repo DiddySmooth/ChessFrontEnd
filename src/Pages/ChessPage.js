@@ -1,8 +1,9 @@
-import React, { Component, useState, useContext } from "react";
+import React, { Component, useState, useContext, useEffect } from "react";
 import socketIOClient from "socket.io-client";
 import Button from '@material-ui/core/Button';
 import WithMoveValidation from "./ChessIntergration";
 import { UserContext } from '../Context/UserContext'
+import { SentimentDissatisfiedRounded } from "@material-ui/icons";
 
 const ENDPOINT = "http://127.0.0.1:3001";
 
@@ -10,6 +11,8 @@ const Demo = () => {
     let [players, setPlayers] = useState([1,2,3,4])
     const [response, setResponse] = useState("");
     const [play, setPlay] = useState(true)
+    const [fen, setFen] = useState(null)
+    const [updateBoard, setUpdateBoard] = useState(null)
     const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
 
     const {userState} = useContext(UserContext)
@@ -19,11 +22,12 @@ const Demo = () => {
 
     const socketConnect = () => {
         socket.on("connection", data => {
+            console.log(data)
             setResponse(data)
         })
 
         let color
-        let player1 = "DiddySmooth"
+        let player1 = user.name
         let roomId = 1
         socket.emit("joined", player1, roomId, ack => {socket.send(player1)})
 
@@ -39,16 +43,27 @@ const Demo = () => {
             }
             // console.log(msg)
         })
+        socket.on('message', function (msg) {
+            setUpdateBoard(msg)
+            console.log("Received", msg)
+        })
     }
-    
+    const sendFen = () => {
+        console.log("Sent", fen)
+        socket.emit("message", fen, ack => {socket.send(fen)})
 
+    }
 
+    useEffect(()=>{
+        sendFen()
+    },[fen])
     return (
       <div>
         <div style={boardsContainer}>
-          <WithMoveValidation />
+          <WithMoveValidation setFen={setFen} test="test" updateBoard={updateBoard} />
         </div>
         <Button onClick={ () => {socketConnect()}}>Click me</Button>
+        <Button onClick={ () => {sendFen()}}>Send</Button>
       </div>
     );
 }
