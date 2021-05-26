@@ -36,7 +36,6 @@ function App() {
   return (
     <div className="App">
       <PrimarySearchAppBar />
-      <ChessPage />
       <Route exact path="/login">
         {user ? 
           <Redirect to="/home" />

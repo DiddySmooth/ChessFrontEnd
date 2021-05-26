@@ -1,4 +1,5 @@
 import React from 'react';
+import {useContext} from 'react'
 import { fade, makeStyles } from '@material-ui/core/styles';
 import {Route, Redirect} from 'react-router-dom'
 import AppBar from '@material-ui/core/AppBar';
@@ -13,6 +14,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import { UserContext } from '../Context/UserContext'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -84,9 +86,11 @@ export default function PrimarySearchAppBar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [redirectLogin, setRedirectLogin] = React.useState(false)
   const [redirectRegister, setRedirectRegister] = React.useState(false)
+  const [redirectGame, setRedirectGame] = React.useState(false)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  const {userState} = useContext(UserContext)
+  const [user, setUser] = userState
 
 
   const handleProfileMenuOpen = (event) => {
@@ -109,13 +113,25 @@ export default function PrimarySearchAppBar() {
   const handleLoginClick = () => {
     setRedirectLogin(true)
     setRedirectRegister(false)
+    setRedirectGame(false)
     console.log("Login")
     
   }
   const handleSignUpClick = () => {
     setRedirectRegister(true)
     setRedirectLogin(false)
+    setRedirectGame(false)
     console.log("Register")
+  }
+  const handleGameClick = () => {
+    setRedirectRegister(false)
+    setRedirectLogin(false)
+    setRedirectGame(true)
+    console.log("Register")
+  }
+  const handleLogoutClick = () => {
+    localStorage.removeItem("userId")
+    console.log("logout")
   }
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -128,8 +144,18 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={ () =>{handleMenuClose();handleLoginClick()}}>Login</MenuItem>
-      <MenuItem onClick={ () =>{handleMenuClose();handleSignUpClick()}}>Register</MenuItem>
+        {user ? 
+        <div>
+            <MenuItem onClick={ () =>{handleMenuClose();handleLogoutClick()}}>Logout</MenuItem>
+        </div>
+        :
+        <div>
+            <MenuItem onClick={ () =>{handleMenuClose();handleLoginClick()}}>Login</MenuItem>
+            <MenuItem onClick={ () =>{handleMenuClose();handleSignUpClick()}}>Register</MenuItem>
+        </div>
+        }
+      
+      
     </Menu>
   );
 
@@ -186,7 +212,7 @@ export default function PrimarySearchAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>
+          <Typography onClick={ () =>handleGameClick()} className={classes.title} variant="h6" noWrap>
             Gray Chess
           </Typography>
 
@@ -230,6 +256,12 @@ export default function PrimarySearchAppBar() {
       {renderMenu}
       {redirectLogin ?
         <Redirect to="/login" />
+      :
+        <Redirect to="/home" />
+
+      }
+      {redirectGame ?
+        <Redirect to="/game" />
       :
         <Redirect to="/home" />
 

@@ -16,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {useState, useContext} from 'react'
 import {UserContext} from '../Context/UserContext'
 
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100vh',
   },
   image: {
-    backgroundImage: 'url(https://source.unsplash.com/random)',
+    backgroundImage: 'url(https://i.imgur.com/FJJCXHF.jpg)',
     backgroundRepeat: 'no-repeat',
     backgroundColor:
       theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
@@ -67,7 +68,7 @@ export default function SignInSide() {
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
 
-  const loginSubmit = async (e) => {
+  const registerSubmit = async (e) => {
     e.preventDefault()
     
     let res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/user/login`, {
@@ -90,7 +91,7 @@ export default function SignInSide() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form}  noValidate onSubmit={registerSubmit}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -101,6 +102,8 @@ export default function SignInSide() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={(e) => {setEmail(e.target.value)}}
             />
             <TextField
               variant="outlined"
@@ -112,6 +115,8 @@ export default function SignInSide() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => {setPassword(e.target.value)}}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

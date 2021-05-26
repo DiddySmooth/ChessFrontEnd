@@ -70,7 +70,8 @@ export default function SignUp() {
         password: password,
         
     })
-    localStorage.setItem('userId', res.data.encryptedId)
+    console.log(res.data.userId)
+    localStorage.setItem('userId', res.data.userId)
     setUser(res.data.user)
 }
 
