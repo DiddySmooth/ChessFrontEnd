@@ -17,7 +17,6 @@ import {useState, useContext} from 'react'
 import {UserContext} from '../Context/UserContext'
 
 
-
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">

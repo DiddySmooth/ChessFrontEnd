@@ -1,15 +1,16 @@
-import logo from './logo.svg';
 import './App.css';
 import {Route, Redirect} from 'react-router-dom'
 import {useEffect, useContext} from 'react'
 import axios from 'axios'
 import {UserContext} from './Context/UserContext'
 import SignInSide from './Pages/LoginPage'
+
 import SignUp from './Pages/SignupPage';
 import ChessPage from './Pages/ChessPage';
 import HomePage from './Pages/HomePage'
 import PrimarySearchAppBar from './Components/NavBar';
 import ProfilePage from './Pages/ProfilePage';
+
 
 function App() {
   const {userState} = useContext(UserContext)
@@ -23,7 +24,7 @@ function App() {
         }
       })
 
-      
+
       if (res.data.user) {
         setUser(res.data.user)
         console.log(res.data.user)
@@ -54,6 +55,7 @@ function App() {
           <Redirect to="/home" />
         :
           <SignUp />
+
           
         }
       </Route>
@@ -68,6 +70,7 @@ function App() {
       <Route exact path="/game">
         <ChessPage />
       </Route>
+
     </div>
   );
 }
