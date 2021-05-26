@@ -3284,12 +3284,6 @@ chess.js@^0.11.0:
   resolved "https://registry.yarnpkg.com/chess.js/-/chess.js-0.11.0.tgz#e1802179b944eab5daf11b5d4bce08cdcadbeffa"
   integrity sha512-yTpi6XbRMkBtnjSvbt6wEp9Y7JzhJl1MC3GNn67q5ClyccXxCRf5cMPSUg4OblrUapg1kLHm7WzxxEVp20NK1Q==
 
-chessboard@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/chessboard/-/chessboard-2.0.0.tgz#a75e343ba152333dc04ac2ae293a0bd32fa4ad62"
-  integrity sha512-cA5irhgOaA6bHRzMBYnYIldGU2AsJ17iWRGFFkygzknPWRcXc0k7QYLtKlgorsNm9yLrY3nC2GijOObmMB2cVQ==
-  dependencies:
-    chess.js "^0.10.2"
 
 chessboardjsx@^2.4.7:
   version "2.4.7"
@@ -3301,6 +3295,7 @@ chessboardjsx@^2.4.7:
     react-dnd "2.6.0"
     react-dnd-html5-backend "4.0.5"
     react-dnd-multi-backend "3.1.2"
+
 
 chokidar@^2.1.8:
   version "2.1.8"
@@ -7160,6 +7155,11 @@ klona@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
+
+konva@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-8.0.1.tgz#f34f483cdf62c36f966addc1a7484ed694313c2b"
+  integrity sha512-QDppGS1L5Dhod1zjwy9GVVjeyfPBHnPncL5oRh1NyjR1mEvhrLjzflrkdW+p73uFIW9hwCDZVLGxzzjQre9izw==
 
 language-subtag-registry@~0.3.2:
   version "0.3.21"
