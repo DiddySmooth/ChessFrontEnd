@@ -87,6 +87,7 @@ export default function PrimarySearchAppBar() {
   const [redirectLogin, setRedirectLogin] = React.useState(false)
   const [redirectRegister, setRedirectRegister] = React.useState(false)
   const [redirectGame, setRedirectGame] = React.useState(false)
+  const [redirectProfile, setRedirectProfile] = React.useState(false)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const {userState} = useContext(UserContext)
@@ -127,12 +128,20 @@ export default function PrimarySearchAppBar() {
     setRedirectRegister(false)
     setRedirectLogin(false)
     setRedirectGame(true)
-    console.log("Register")
+    console.log("Game")
+  }
+  const handleProfileClick = () => {
+    setRedirectRegister(false)
+    setRedirectLogin(false)
+    setRedirectGame(false)
+    setRedirectProfile(true)
+    console.log("Profile")
   }
   const handleLogoutClick = () => {
     localStorage.removeItem("userId")
     console.log("logout")
   }
+  
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -144,18 +153,11 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-        {user ? 
-        <div>
+            <MenuItem onClick={ () =>{handleMenuClose();handleProfileClick()}}>Profile</MenuItem>
             <MenuItem onClick={ () =>{handleMenuClose();handleLogoutClick()}}>Logout</MenuItem>
-        </div>
-        :
-        <div>
             <MenuItem onClick={ () =>{handleMenuClose();handleLoginClick()}}>Login</MenuItem>
             <MenuItem onClick={ () =>{handleMenuClose();handleSignUpClick()}}>Register</MenuItem>
-        </div>
-        }
-      
-      
+            <MenuItem onClick={ () =>{handleMenuClose();handleGameClick()}}>Play</MenuItem>
     </Menu>
   );
 
@@ -268,6 +270,12 @@ export default function PrimarySearchAppBar() {
       }
       {redirectRegister ?
         <Redirect to="/register" />
+      :
+        <Redirect to="/home" />
+
+      }
+      {redirectProfile ?
+        <Redirect to="/profile" />
       :
         <Redirect to="/home" />
 

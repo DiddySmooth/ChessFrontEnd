@@ -1,0 +1,10 @@
+        {user ? 
+        <div>
+            <MenuItem onClick={ () =>{handleMenuClose();handleLogoutClick()}}>Logout</MenuItem>
+        </div>
+        :
+        <div>
+            <MenuItem onClick={ () =>{handleMenuClose();handleLoginClick()}}>Login</MenuItem>
+            <MenuItem onClick={ () =>{handleMenuClose();handleSignUpClick()}}>Register</MenuItem>
+        </div>
+        }
