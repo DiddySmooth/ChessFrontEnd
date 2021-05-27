@@ -1,8 +1,12 @@
+import Container from '@material-ui/core/Container';
 const ProfilePage = () => {
     return(
-        <div>
-            Profile Page
-        </div>
+        <Container>
+            <div>
+                Profile Page
+            </div>
+        </Container>
+        
     )
 }
 export default ProfilePage

@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Chess from "chess.js"; // import Chess from  "chess.js"(default) if recieving an error about new Chess() not being a constructor
-
+import socketIOClient from "socket.io-client";
 import Chessboard from "chessboardjsx";
-
+const ENDPOINT = "http://127.0.0.1:3001";
 class HumanVsHuman extends React.Component {
     constructor(props){
         super(props)
         this.props = props
     }
   static propTypes = { children: PropTypes.func };
-
   state = {
     fen: "start",
     // square styles for active drop square
@@ -24,14 +23,31 @@ class HumanVsHuman extends React.Component {
     // array of past game moves
     history: []
   };
-
   componentDidMount() {
     this.game = new Chess();
-    console.log(this.props.updateBoard)
-    
+    const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
+    socket.on('move', (msg) => {
+      console.log('move',msg)
+      let sourceSquare = msg.msg.sourceSquare
+      let targetSquare = msg.msg.targetSquare
+      this.onDrop(sourceSquare,targetSquare)
+      this.game.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: "q" // always promote to a queen for example simplicity
+      });
+      this.setState(({ history, pieceSquare }) => ({
+        fen: this.game.fen(),
+        history: this.game.history({ verbose: true }),
+        squareStyles: squareStyling({ pieceSquare, history })
+      }));
+      this.isGameOver()
+  })
+    socket.on('joined', (msg) => {
+      console.log('hello',msg)
+})
   }
   componentDidUpdate(prevProps){
- 
     if(this.state.fen !== this.props.updateBoard && this.props.updateBoard !== null){
         console.log(this.props.updateBoard)
         this.setState({fen: this.props.updateBoard})
@@ -47,7 +63,6 @@ class HumanVsHuman extends React.Component {
       squareStyles: squareStyling({ pieceSquare, history })
     }));
   };
-
   // show possible moves
   highlightSquare = (sourceSquare, squaresToHighlight) => {
     const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
@@ -69,12 +84,10 @@ class HumanVsHuman extends React.Component {
       },
       {}
     );
-
     this.setState(({ squareStyles }) => ({
       squareStyles: { ...squareStyles, ...highlightStyles }
     }));
   };
-
   onDrop = ({ sourceSquare, targetSquare }) => {
     // see if the move is legal
     let move = this.game.move({
@@ -82,7 +95,6 @@ class HumanVsHuman extends React.Component {
       to: targetSquare,
       promotion: "q" // always promote to a queen for example simplicity
     });
-
     // illegal move
     if (move === null) return;
     this.setState(({ history, pieceSquare }) => ({
@@ -90,34 +102,28 @@ class HumanVsHuman extends React.Component {
       history: this.game.history({ verbose: true }),
       squareStyles: squareStyling({ pieceSquare, history })
     }));
+    // console.log('move',move)
+    // console.log('target',sourceSquare,targetSquare)
+    console.log('FEN',this.game.fen())
     this.isGameOver()
-    let fenMsg = this.game.fen()
-    console.log(move)
-    this.props.setFen(fenMsg)
-    
+    const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
+    socket.emit('move', {sourceSquare, targetSquare})
   };
-
- 
   onMouseOverSquare = square => {
     // get list of possible moves for this square
     let moves = this.game.moves({
       square: square,
       verbose: true
     });
-
     // exit if there are no moves available for this square
     if (moves.length === 0) return;
-
     let squaresToHighlight = [];
     for (var i = 0; i < moves.length; i++) {
       squaresToHighlight.push(moves[i].to);
     }
-
     this.highlightSquare(square, squaresToHighlight);
   };
-
   onMouseOutSquare = square => this.removeHighlightSquare(square);
-
   // central squares get diff dropSquareStyles
   onDragOverSquare = square => {
     this.setState({
@@ -127,37 +133,30 @@ class HumanVsHuman extends React.Component {
           : { boxShadow: "inset 0 0 1px 4px rgb(255, 255, 0)" }
     });
   };
-
   onSquareClick = square => {
     this.setState(({ history }) => ({
       squareStyles: squareStyling({ pieceSquare: square, history }),
       pieceSquare: square
     }));
-
     let move = this.game.move({
       from: this.state.pieceSquare,
       to: square,
       promotion: "q" // always promote to a queen for example simplicity
     });
-
     // illegal move
     if (move === null) return;
-
     this.setState({
       fen: this.game.fen(),
       history: this.game.history({ verbose: true }),
       pieceSquare: ""
     });
   };
-
   onSquareRightClick = square =>
     this.setState({
       squareStyles: { [square]: { backgroundColor: "deepPink" } }
     });
-
   render() {
     const { fen, dropSquareStyle, squareStyles } = this.state;
-
     return this.props.children({
       squareStyles,
       position: fen,
@@ -172,7 +171,6 @@ class HumanVsHuman extends React.Component {
     });
   }
 }
-
 export default function WithMoveValidation(props) {
   return (
     <div>
@@ -212,11 +210,9 @@ export default function WithMoveValidation(props) {
     </div>
   );
 }
-
 const squareStyling = ({ pieceSquare, history }) => {
   const sourceSquare = history.length && history[history.length - 1].from;
   const targetSquare = history.length && history[history.length - 1].to;
-
   return {
     [pieceSquare]: { backgroundColor: "rgba(255, 255, 0, 0.4)" },
     ...(history.length && {
