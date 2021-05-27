@@ -3,6 +3,10 @@ import PropTypes from "prop-types";
 import Chess from "chess.js"; // import Chess from  "chess.js"(default) if recieving an error about new Chess() not being a constructor
 import socketIOClient from "socket.io-client";
 import Chessboard from "chessboardjsx";
+import {useState, useContext} from 'react'
+import {UserContext} from '../Context/UserContext'
+import Button from '@material-ui/core/Button';
+
 const ENDPOINT = "http://127.0.0.1:3001";
 class HumanVsHuman extends React.Component {
     constructor(props){
@@ -25,7 +29,10 @@ class HumanVsHuman extends React.Component {
   };
   componentDidMount() {
     this.game = new Chess();
+    let player1="grayson"
     const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
+    socket.emit("joined", player1, ack => {socket.send(player1)})
+
     socket.on('move', (msg) => {
       console.log('move',msg)
       let sourceSquare = msg.msg.sourceSquare
@@ -42,6 +49,7 @@ class HumanVsHuman extends React.Component {
         squareStyles: squareStyling({ pieceSquare, history })
       }));
       this.isGameOver()
+      
   })
     socket.on('joined', (msg) => {
       console.log('hello',msg)
@@ -167,14 +175,17 @@ class HumanVsHuman extends React.Component {
       onDragOverSquare: this.onDragOverSquare,
       onSquareClick: this.onSquareClick,
       onSquareRightClick: this.onSquareRightClick,
-      isGameOver: this.isGameOver
+      isGameOver: this.isGameOver,
+      enterRoom: this.enterRoom
     });
   }
 }
 export default function WithMoveValidation(props) {
   return (
     <div>
+       
       <HumanVsHuman test={props.test} setFen={props.setFen} updateBoard={props.updateBoard}>
+     
         {({
           position,
           onDrop,
@@ -185,7 +196,8 @@ export default function WithMoveValidation(props) {
           onDragOverSquare,
           onSquareClick,
           onSquareRightClick,
-          isGameOver
+          isGameOver,
+          enterRoom
         }) => (
           <Chessboard
             id="humanVsHuman"
@@ -204,9 +216,12 @@ export default function WithMoveValidation(props) {
             onSquareClick={onSquareClick}
             onSquareRightClick={onSquareRightClick}
             isGameOver={isGameOver}
+            enterRoom={enterRoom}
           />
         )}
+
       </HumanVsHuman>
+      
     </div>
   );
 }
