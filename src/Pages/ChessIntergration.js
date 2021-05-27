@@ -7,7 +7,8 @@ import {useState, useContext} from 'react'
 import {UserContext} from '../Context/UserContext'
 import Button from '@material-ui/core/Button';
 
-const ENDPOINT = "http://127.0.0.1:3001";
+const ENDPOINT = process.env.PORT || "http://127.0.0.1:3001";
+let roomId
 class HumanVsHuman extends React.Component {
     constructor(props){
         super(props)
@@ -32,23 +33,31 @@ class HumanVsHuman extends React.Component {
         let player1 = Math.floor(Math.random() * (10000 - 1) + 1); 
         const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
         // socket.emit("joined", player1, ack => {socket.send(player1)})
+        
+        socket.on('room', (msg) => {
+            roomId = msg
+            console.log(roomId)
+        })
         socket.emit('joined', player1)
         socket.on('move', (msg) => {
-            
-            let sourceSquare = msg.msg.sourceSquare
-            let targetSquare = msg.msg.targetSquare
-            this.onDrop(sourceSquare,targetSquare)
-            this.game.move({
-                from: sourceSquare,
-                to: targetSquare,
-                promotion: "q" // always promote to a queen for example simplicity
-            });
-            this.setState(({ history, pieceSquare }) => ({
-                fen: this.game.fen(),
-                history: this.game.history({ verbose: true }),
-                squareStyles: squareStyling({ pieceSquare, history })
-            }));
-            this.isGameOver()
+            console.log(roomId)
+            if(msg.msg.roomId.gameId === roomId.gameId)
+            {
+                let sourceSquare = msg.msg.sourceSquare
+                let targetSquare = msg.msg.targetSquare
+                this.onDrop(sourceSquare,targetSquare)
+                this.game.move({
+                    from: sourceSquare,
+                    to: targetSquare,
+                    promotion: "q" // always promote to a queen for example simplicity
+                });
+                this.setState(({ history, pieceSquare }) => ({
+                    fen: this.game.fen(),
+                    history: this.game.history({ verbose: true }),
+                    squareStyles: squareStyling({ pieceSquare, history })
+                }));
+                this.isGameOver()
+            }
       
         })
         socket.on('joined', (msg) => {
@@ -116,7 +125,7 @@ class HumanVsHuman extends React.Component {
         console.log('FEN',this.game.fen())
         this.isGameOver()
         const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
-        socket.emit('move', {sourceSquare, targetSquare})
+        socket.emit('move', {sourceSquare, targetSquare, roomId})
     };
     onMouseOverSquare = square => {
         // get list of possible moves for this square
