@@ -11,7 +11,7 @@ const UserProvider = ({children}) => {
     const fetchUser = () => {
         const userId = localStorage.getItem('userId')
         if (userId) {
-            axios.get(`${backEnd}/users/verify`, {
+            axios.get(`${backEnd}/users/getInfo`, {
                 headers: {
                     Authorization: userId
                 }
