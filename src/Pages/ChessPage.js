@@ -19,7 +19,7 @@ const Demo = () => {
     return (
       <div>
         <div style={boardsContainer}>
-          <WithMoveValidation  user={user}  />
+          <WithMoveValidation setFen={setFen} test="test" updateBoard={updateBoard} />
         </div>
         {/* <Button onClick={ () => {createOrJoin()}}>Click me</Button>
         <Button onClick={ () => {sendFen()}}>Send</Button> */}
