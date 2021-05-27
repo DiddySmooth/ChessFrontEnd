@@ -7,7 +7,7 @@ import {useState, useContext} from 'react'
 import {UserContext} from '../Context/UserContext'
 import Button from '@material-ui/core/Button';
 
-const ENDPOINT = process.env.PORT || "http://127.0.0.1:3001";
+const ENDPOINT = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:3001";
 let roomId
 class HumanVsHuman extends React.Component {
     constructor(props){
