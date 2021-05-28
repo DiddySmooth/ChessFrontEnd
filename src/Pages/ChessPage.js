@@ -31,7 +31,7 @@ const Demo = () => {
       <div>
         <div style={boardsContainer}>
             {user ? 
-                <WithMoveValidation setFen={setFen} test="test" updateBoard={updateBoard} user={user.username} />
+                <WithMoveValidation setFen={setFen} test={user.username} updateBoard={updateBoard}  />
             :
                 <Redirect to="/home" />
             }

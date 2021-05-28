@@ -10,6 +10,7 @@ import ChessPage from './Pages/ChessPage';
 import HomePage from './Pages/HomePage'
 import PrimarySearchAppBar from './Components/NavBar';
 import ProfilePage from './Pages/ProfilePage';
+import LeaderBoard from './Pages/Leaderboard';
 
 
 function App() {
@@ -69,6 +70,10 @@ function App() {
       </Route>
       <Route exact path="/game">
         <ChessPage />
+      </Route>
+      
+      <Route exact path="/leaderboard">
+        <LeaderBoard />
       </Route>
 
     </div>
