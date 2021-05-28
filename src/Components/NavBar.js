@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   title: {
+    marginLeft: 50,
     display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
@@ -84,10 +85,13 @@ export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
   const [redirectLogin, setRedirectLogin] = React.useState(false)
   const [redirectRegister, setRedirectRegister] = React.useState(false)
   const [redirectGame, setRedirectGame] = React.useState(false)
   const [redirectProfile, setRedirectProfile] = React.useState(false)
+  const [redirectLeaderBoard, setRedirectLeaderBoard] = React.useState(false)
+
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const {userState} = useContext(UserContext)
@@ -115,6 +119,7 @@ export default function PrimarySearchAppBar() {
     setRedirectLogin(true)
     setRedirectRegister(false)
     setRedirectGame(false)
+    setRedirectLeaderBoard(false)
     console.log("Login")
     
   }
@@ -122,12 +127,14 @@ export default function PrimarySearchAppBar() {
     setRedirectRegister(true)
     setRedirectLogin(false)
     setRedirectGame(false)
+    setRedirectLeaderBoard(false)
     console.log("Register")
   }
   const handleGameClick = () => {
     setRedirectRegister(false)
     setRedirectLogin(false)
     setRedirectGame(true)
+    setRedirectLeaderBoard(false)
     console.log("Game")
   }
   const handleProfileClick = () => {
@@ -135,11 +142,20 @@ export default function PrimarySearchAppBar() {
     setRedirectLogin(false)
     setRedirectGame(false)
     setRedirectProfile(true)
+    setRedirectLeaderBoard(false)
     console.log("Profile")
   }
   const handleLogoutClick = () => {
     localStorage.removeItem("userId")
     console.log("logout")
+  }
+  const handleLeaderBoardClick = () => {
+    setRedirectRegister(false)
+    setRedirectLogin(false)
+    setRedirectGame(false)
+    setRedirectProfile(false)
+    setRedirectLeaderBoard(true)
+    console.log("Leaderboard")
   }
   
   const menuId = 'primary-search-account-menu';
@@ -217,6 +233,9 @@ export default function PrimarySearchAppBar() {
           <Typography onClick={ () =>handleGameClick()} className={classes.title} variant="h6" noWrap>
             Gray Chess
           </Typography>
+          <Typography onClick={ () =>handleLeaderBoardClick()} className={classes.title} variant="h6" noWrap>
+            LeaderBoard
+          </Typography>
 
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
@@ -276,6 +295,12 @@ export default function PrimarySearchAppBar() {
       }
       {redirectProfile ?
         <Redirect to="/profile" />
+      :
+        <Redirect to="/home" />
+
+      }
+      {redirectLeaderBoard ?
+        <Redirect to="/leaderboard" />
       :
         <Redirect to="/home" />
 

@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import Chess from "chess.js"; // import Chess from  "chess.js"(default) if recieving an error about new Chess() not being a constructor
 import socketIOClient from "socket.io-client";
 import Chessboard from "chessboardjsx";
-import {useState, useContext} from 'react'
-import {UserContext} from '../Context/UserContext'
-import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { FlashOnRounded } from "@material-ui/icons";
+import axios from "axios";
 
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:3001";
 let roomId
+
 class HumanVsHuman extends React.Component {
     constructor(props){
         super(props)
@@ -26,7 +27,13 @@ class HumanVsHuman extends React.Component {
         // currently clicked square
         square: "",
         // array of past game moves
-        history: []
+        history: [],
+
+        whiteWins: false,
+
+        blackWins: false,
+
+        color: ""
     };
     componentDidMount() {
         this.game = new Chess();
@@ -35,13 +42,13 @@ class HumanVsHuman extends React.Component {
         // socket.emit("joined", player1, ack => {socket.send(player1)})
         
         socket.on('room', (msg) => {
-            roomId = msg
-            console.log(roomId)
+            roomId = msg.gameId
+            console.log(msg)
+            this.color = msg.color
         })
         socket.emit('joined', player1)
         socket.on('move', (msg) => {
-            console.log(roomId)
-            if(msg.msg.roomId.gameId === roomId.gameId)
+            if(msg.msg.roomId === roomId)
             {
                 let sourceSquare = msg.msg.sourceSquare
                 let targetSquare = msg.msg.targetSquare
@@ -70,10 +77,43 @@ class HumanVsHuman extends React.Component {
             this.setState({fen: this.props.updateBoard})
         }
     }
-    isGameOver() {
-        console.log(this.context)
-        if(this.game.game_over() === true)
-        console.log("Game Over")
+    isGameOver(player) {
+        if(this.game.game_over() === true){
+            console.log(this.game.turn())
+            if(this.game.turn() === "w"){
+                console.log("Black Wins,", this.props.test)
+                if(this.color === "black"){
+                    axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/elo`, {
+                        username: this.props.test,
+                        elo: 50
+                    })
+                }
+                else{
+                    axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/elo`, {
+                        username: this.props.test,
+                        elo: -50
+                    })
+                }
+                
+            }
+            else{
+                console.log("White Wins", this.props.test)
+                if(this.color === "white"){
+                    axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/elo`, {
+                        username: this.props.test,
+                        elo: 50
+                    })
+                }
+                else{
+                    axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/elo`, {
+                        username: this.props.test,
+                        elo: -50
+                    })
+                }
+            }
+
+        }
+            
     }
   // keep clicked square style and remove hint squares
     removeHighlightSquare = () => {
@@ -116,13 +156,11 @@ class HumanVsHuman extends React.Component {
         // illegal move
         if (move === null) return;
         this.setState(({ history, pieceSquare }) => ({
-        fen: this.game.fen(),
-        history: this.game.history({ verbose: true }),
-        squareStyles: squareStyling({ pieceSquare, history })
+            fen: this.game.fen(),
+            history: this.game.history({ verbose: true }),
+            squareStyles: squareStyling({ pieceSquare, history })
         }));
-        // console.log('move',move)
-        // console.log('target',sourceSquare,targetSquare)
-        console.log('FEN',this.game.fen())
+
         this.isGameOver()
         const socket = socketIOClient(ENDPOINT, { transports: ['websocket', 'polling', 'flashsocket'] });
         socket.emit('move', {sourceSquare, targetSquare, roomId})
@@ -231,7 +269,20 @@ export default function WithMoveValidation(props) {
         )}
 
       </HumanVsHuman>
-      
+        {/* {this.blackWins ? 
+        <>
+            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                BlackWins
+            </Typography>
+        </>
+        : null }
+        {this.whiteWins ? 
+        <>
+            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                 White Wins
+            </Typography>
+        </>
+        : null } */}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import Container from '@material-ui/core/Container';
+import axios from 'axios'
 import Typography from '@material-ui/core/Typography';
-
+import { UserContext } from '../Context/UserContext'
+import {useContext, useEffect} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 const HomePage = () => {
     const useStyles = makeStyles((theme) => ({
@@ -9,6 +11,30 @@ const HomePage = () => {
           }
       }))
       const classes = useStyles();
+
+      const {userState} = useContext(UserContext)
+      const [user, setUser] = userState
+      const userId = localStorage.getItem('userId')
+
+      const getUserInfo = async () => {
+        try {
+          let res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/user/info`, {
+            headers: {
+              Authorization: userId
+            }
+          })
+    
+    
+          if (res.data.user) {
+            setUser(res.data.user)
+            console.log(res.data.user)
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    
+      useEffect(() => { getUserInfo() }, [])
     return (
         <div>
             
