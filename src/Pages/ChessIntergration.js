@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import PropTypes from "prop-types";
 import Chess from "chess.js"; // import Chess from  "chess.js"(default) if recieving an error about new Chess() not being a constructor
 import socketIOClient from "socket.io-client";
@@ -45,6 +45,7 @@ class HumanVsHuman extends React.Component {
             roomId = msg.gameId
             console.log(msg)
             this.color = msg.color
+            this.props.setColor(this.color)
         })
         socket.emit('joined', player1)
         socket.on('move', (msg) => {
@@ -82,6 +83,8 @@ class HumanVsHuman extends React.Component {
             console.log(this.game.turn())
             if(this.game.turn() === "w"){
                 console.log("Black Wins,", this.props.test)
+                this.state.blackWins = true
+                this.props.setBlackWins(true)
                 if(this.color === "black"){
                     axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/elo`, {
                         username: this.props.test,
@@ -97,7 +100,9 @@ class HumanVsHuman extends React.Component {
                 
             }
             else{
+                this.state.whiteWins = true
                 console.log("White Wins", this.props.test)
+                this.props.setWhiteWins(true)
                 if(this.color === "white"){
                     axios.put(`${process.env.REACT_APP_BACKEND_URL}/user/elo`, {
                         username: this.props.test,
@@ -229,10 +234,15 @@ class HumanVsHuman extends React.Component {
     }
 }
 export default function WithMoveValidation(props) {
+    const [color,setColor] = useState("")
+    const [whiteWins, setWhiteWins] = useState(false)
+    const [blackWins, setBlackWins] = useState(false)
   return (
     <div>
-       
-      <HumanVsHuman test={props.test} setFen={props.setFen} updateBoard={props.updateBoard}>
+       <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                {color}
+        </Typography>
+      <HumanVsHuman test={props.test} setFen={props.setFen} updateBoard={props.updateBoard} setColor={setColor} setBlackWins={setBlackWins} setWhiteWins={setWhiteWins}>
      
         {({
           position,
@@ -267,22 +277,22 @@ export default function WithMoveValidation(props) {
             enterRoom={enterRoom}
           />
         )}
-
+        
       </HumanVsHuman>
-        {/* {this.blackWins ? 
+      {blackWins ? 
         <>
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
                 BlackWins
             </Typography>
         </>
         : null }
-        {this.whiteWins ? 
+        {whiteWins ? 
         <>
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
                  White Wins
             </Typography>
         </>
-        : null } */}
+        : null }
     </div>
   );
 }
